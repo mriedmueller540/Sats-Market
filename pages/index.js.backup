@@ -201,7 +201,7 @@ export default function Home() {
 
   const allItems = [...ordinals, ...runes, ...brc20];
   const filtered = allItems.filter(item => {
-    if (tab !== "all" && String(item.type) !== String(tab)) return false;
+    if (tab !== "all" && item.type !== tab) return false;
     if (search && !item.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
