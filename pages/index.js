@@ -69,6 +69,8 @@ export default function Home() {
   const [timeframe, setTimeframe] = useState("1d");
   const [btcPrice, setBtcPrice] = useState(72000);
   const [walletModal, setWalletModal] = useState(false);
+  const [walletType, setWalletType] = useState("");
+  const [connecting, setConnecting] = useState("");
   const [connected, setConnected] = useState(false);
   const [walletAddr, setWalletAddr] = useState("");
   const [toast, setToast] = useState(null);
@@ -99,6 +101,81 @@ export default function Home() {
 
   const showToast = (msg, icon="✅") => { setToast({msg,icon}); setTimeout(()=>setToast(null),3000); };
   const connectWallet = (w) => { setWalletModal(false); setWalletAddr("bc1p"+Math.random().toString(36).slice(2,8)+"..."+Math.random().toString(36).slice(2,5)); setConnected(true); showToast(`${w.name} connected`,"🌿"); };
+
+
+  const connectXverse = async () => {
+    setConnecting("Xverse");
+    try {
+      if (typeof window.XverseProviders === "undefined" && typeof window.BitcoinProvider === "undefined") {
+        showToast("Xverse not installed — opening download page","🟧");
+        window.open("https://www.xverse.app/download","_blank");
+        setConnecting(""); return;
+      }
+      const provider = window.XverseProviders?.BitcoinProvider || window.BitcoinProvider;
+      const response = await provider.request("getAccounts", {
+        purposes: ["ordinals","payment"],
+        message: "Connect to The Garden",
+      });
+      if (response?.result?.length > 0) {
+        const account = response.result.find(a => a.purpose === "ordinals") || response.result[0];
+        const addr = account.address;
+        setWalletAddr(addr.slice(0,6)+"..."+addr.slice(-4));
+        setWalletType("Xverse"); setConnected(true); setWalletModal(false);
+        showToast("Xverse connected — welcome to The Garden 🌿","🟧");
+      }
+    } catch(e) { showToast("Connection cancelled","❌"); }
+    setConnecting("");
+  };
+
+  const connectLeather = async () => {
+    setConnecting("Leather");
+    try {
+      if (typeof window.LeatherProvider === "undefined") {
+        showToast("Leather not installed — opening download page","🟤");
+        window.open("https://leather.io/install-extension","_blank");
+        setConnecting(""); return;
+      }
+      const response = await window.LeatherProvider.request("getAddresses");
+      if (response?.result?.addresses) {
+        const addr = (response.result.addresses.find(a => a.type === "p2tr") || response.result.addresses[0]).address;
+        setWalletAddr(addr.slice(0,6)+"..."+addr.slice(-4));
+        setWalletType("Leather"); setConnected(true); setWalletModal(false);
+        showToast("Leather connected — welcome to The Garden 🌿","🟤");
+      }
+    } catch(e) { showToast("Connection cancelled","❌"); }
+    setConnecting("");
+  };
+
+  const connectUnisat = async () => {
+    setConnecting("UniSat");
+    try {
+      if (typeof window.unisat === "undefined") {
+        showToast("UniSat not installed — opening download page","🔵");
+        window.open("https://unisat.io/download","_blank");
+        setConnecting(""); return;
+      }
+      const accounts = await window.unisat.requestAccounts();
+      if (accounts?.length > 0) {
+        const addr = accounts[0];
+        setWalletAddr(addr.slice(0,6)+"..."+addr.slice(-4));
+        setWalletType("UniSat"); setConnected(true); setWalletModal(false);
+        showToast("UniSat connected — welcome to The Garden 🌿","🔵");
+      }
+    } catch(e) { showToast("Connection cancelled","❌"); }
+    setConnecting("");
+  };
+
+  const disconnect = () => {
+    setConnected(false); setWalletAddr(""); setWalletType("");
+    showToast("Wallet disconnected","👋");
+  };
+
+  const handleWalletClick = (name) => {
+    if (name === "Xverse") connectXverse();
+    else if (name === "Leather") connectLeather();
+    else if (name === "UniSat") connectUnisat();
+    else { showToast("OKX coming soon","⬛"); setWalletModal(false); }
+  };
 
   const tableData = tab==="ordinals" ? COLLECTIONS : tab==="runes" ? RUNES : BRC20;
   const filtered = search ? tableData.filter(i=>i.name.toLowerCase().includes(search.toLowerCase())) : tableData;
@@ -408,7 +485,7 @@ export default function Home() {
             <div className="modal-body">
               <p className="modal-tagline">Connect your Bitcoin wallet to trade Ordinals, Runes, and BRC-20 tokens. All trades are trustless via PSBT — we never hold your funds.</p>
               {WALLETS.map(w=>(
-                <div key={w.name} className="wallet-option" onClick={()=>connectWallet(w)}>
+                <div key={w.name} className="wallet-option" onClick={()=>handleWalletClick(w.name)}>
                   <div className="wallet-icon" style={{background:w.color+"22"}}>{w.icon}</div>
                   <div><div className="wallet-name">{w.name}</div><div className="wallet-desc">{w.desc}</div></div>
                 </div>
