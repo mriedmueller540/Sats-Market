@@ -4,83 +4,97 @@ import Head from "next/head";
 const HIRO_API = "https://api.hiro.so";
 const API_KEY = process.env.NEXT_PUBLIC_HIRO_API_KEY;
 
-const headers = {
-  "x-api-key": API_KEY,
-  "Content-Type": "application/json",
-};
+const COLLECTIONS = [
+  { id:1, name:"NodeMonkes", floor:"0.0240", change:"-15.2%", vol:"3.48", sales:159, listed:"14.4%", cap:"239.90", img:"💎", color:"#1a1a2e" },
+  { id:2, name:"Bitcoin Puppets", floor:"0.0110", change:"-2.7%", vol:"2.06", sales:199, listed:"11.2%", cap:"120.01", img:"🤡", color:"#2d1a1a" },
+  { id:3, name:"Runestone", floor:"0.0012", change:"-12.7%", vol:"1.91", sales:1212, listed:"2.5%", cap:"185.39", img:"⚔️", color:"#1a1a1a" },
+  { id:4, name:"Bitcoin Frogs", floor:"0.0043", change:"+16.2%", vol:"0.80", sales:20, listed:"10.6%", cap:"49.00", img:"🐸", color:"#1a2d1a" },
+  { id:5, name:"Ordinal Maxi Biz", floor:"0.0160", change:"-12.1%", vol:"1.77", sales:100, listed:"1.2%", cap:"143.93", img:"🧙", color:"#2d2d1a" },
+  { id:6, name:"Bitcoin Shrooms", floor:"0.3333", change:"-0.5%", vol:"0.48", sales:2, listed:"1.8%", cap:"74.66", img:"🍄", color:"#1a2d2d" },
+  { id:7, name:"Taproot Wizards", floor:"0.0587", change:"-14.9%", vol:"0.46", sales:10, listed:"0.6%", cap:"123.63", img:"🧙‍♂️", color:"#2d1a2d" },
+  { id:8, name:"CENTS", floor:"0.0062", change:"+12.6%", vol:"0.40", sales:78, listed:"6.6%", cap:"401.88", img:"🪙", color:"#1a1a2d" },
+];
 
-const badgeClass = (type) => type === "ord" ? "badge-ord" : type === "rune" ? "badge-rune" : "badge-brc";
-const badgeLabel = (type) => type === "ord" ? "ORDINAL" : type === "rune" ? "RUNE" : "BRC-20";
-const typeColor = (type) => type === "ord" ? "#f7931a" : type === "rune" ? "#a78bfa" : "#38bdf8";
+const RUNES = [
+  { id:1, name:"UNCOMMON•GOODS", floor:"0.000042", change:"+12.4%", vol:"84.2", sales:4829, listed:"48,291", cap:"$84.2M", img:"🟣", color:"#1a1a2e" },
+  { id:2, name:"DOG•GO•TO•THE•MOON", floor:"0.000018", change:"+8.1%", vol:"172", sales:10288, listed:"102,884", cap:"$172M", img:"🐕", color:"#2d1a1a" },
+  { id:3, name:"SATOSHI•NAKAMOTO", floor:"0.00091", change:"-3.2%", vol:"1.85", sales:1245, listed:"12,450", cap:"$1.85M", img:"₿", color:"#1a1a1a" },
+  { id:4, name:"RSIC•GENESIS•RUNE", floor:"0.00032", change:"+5.1%", vol:"12.4", sales:892, listed:"8,921", cap:"$12.4M", img:"⚡", color:"#1a2d1a" },
+  { id:5, name:"PUPS•WORLD•PEACE", floor:"0.00015", change:"+22.3%", vol:"8.9", sales:3421, listed:"34,210", cap:"$8.9M", img:"🐾", color:"#2d2d1a" },
+  { id:6, name:"MAGIC•INTERNET•MONEY", floor:"0.00008", change:"-1.8%", vol:"4.2", sales:2100, listed:"21,000", cap:"$4.2M", img:"✨", color:"#1a2d2d" },
+];
+
+const BRC20 = [
+  { id:1, name:"ORDI", floor:"0.00082", change:"+5.6%", vol:"1.67", sales:8923, listed:"89,234", cap:"$1.67M", img:"🔵", color:"#1a1a2e" },
+  { id:2, name:"SATS", floor:"0.0000003", change:"+2.8%", vol:"60.9", sales:21489, listed:"214,890", cap:"$60.9M", img:"🌊", color:"#2d1a1a" },
+  { id:3, name:"RATS", floor:"0.00000041", change:"-1.4%", vol:"39.7", sales:7611, listed:"76,112", cap:"$39.7M", img:"🐀", color:"#1a1a1a" },
+  { id:4, name:"MEME", floor:"0.00000021", change:"+8.9%", vol:"12.1", sales:4200, listed:"42,000", cap:"$12.1M", img:"😂", color:"#1a2d1a" },
+  { id:5, name:"DOGE", floor:"0.00000089", change:"-4.2%", vol:"8.8", sales:1890, listed:"18,900", cap:"$8.8M", img:"🐶", color:"#2d2d1a" },
+  { id:6, name:"PEPE", floor:"0.00000012", change:"+31.4%", vol:"22.4", sales:9821, listed:"98,210", cap:"$22.4M", img:"🐸", color:"#1a2d2d" },
+];
+
+const MEMPOOL = [
+  { time:"5s", col:"NodeMonkes", price:"0.0240", from:"bc1q...9fk", to:"bc1p...8mn", type:"sale" },
+  { time:"12s", col:"UNCOMMON•GOODS", price:"0.000042", from:"bc1p...3xp", to:"—", type:"list" },
+  { time:"28s", col:"Runestone", price:"0.0012", from:"bc1q...7qw", to:"bc1q...1yz", type:"sale" },
+  { time:"41s", col:"ORDI", price:"0.00082", from:"bc1p...5rs", to:"bc1p...4ab", type:"sale" },
+  { time:"1m", col:"Bitcoin Frogs", price:"0.0043", from:"bc1q...6cd", to:"—", type:"list" },
+  { time:"1m", col:"DOG•GO•TO•THE•MOON", price:"0.000018", from:"bc1p...9ef", to:"bc1q...2gh", type:"sale" },
+  { time:"2m", col:"SATS", price:"0.0000003", from:"bc1q...7ij", to:"bc1p...3kl", type:"transfer" },
+  { time:"2m", col:"Taproot Wizards", price:"0.0587", from:"bc1p...4mn", to:"—", type:"list" },
+];
+
+const TRENDING = [
+  { name:"NodeMonkes", img:"💎", color:"#1a1a2e" },
+  { name:"Bitcoin Frogs", img:"🐸", color:"#1a2d1a" },
+  { name:"UNCOMMON•GOODS", img:"🟣", color:"#2d1a2d" },
+  { name:"DOG•GO•TO•THE•MOON", img:"🐕", color:"#2d1a1a" },
+  { name:"Runestone", img:"⚔️", color:"#1a1a1a" },
+  { name:"ORDI", img:"🔵", color:"#1a1a2e" },
+  { name:"Taproot Wizards", img:"🧙‍♂️", color:"#2d1a2d" },
+  { name:"PEPE", img:"🐸", color:"#1a2d1a" },
+  { name:"RATS", img:"🐀", color:"#2d2d1a" },
+  { name:"RSIC•GENESIS•RUNE", img:"⚡", color:"#1a2d2d" },
+];
 
 const WALLETS = [
-  { name: "Xverse", desc: "Most popular Bitcoin & Ordinals wallet", icon: "🟧", color: "#F7931A" },
-  { name: "Leather", desc: "Formerly Hiro Wallet — Bitcoin native", icon: "🟤", color: "#8B4513" },
-  { name: "UniSat", desc: "Built for Ordinals & BRC-20", icon: "🔵", color: "#3B82F6" },
-  { name: "OKX Wallet", desc: "Multi-chain with Bitcoin Ordinals support", icon: "⬛", color: "#333" },
-];
-
-const FALLBACK_ORDINALS = [
-  { id: 1, type: "ord", emoji: "🟠", name: "Ordinal Punk #4291", collection: "Ordinal Punks", price: "0.085", usd: "$8,245", inscription: "i4a9f2b...3c8d", sat: "1,923,847,291", rarity: "Uncommon", tags: ["Alien", "Laser Eyes"] },
-  { id: 2, type: "ord", emoji: "⚡", name: "Bitcoin Frog #812", collection: "Bitcoin Frogs", price: "0.042", usd: "$4,074", inscription: "i7d2e1a...9f0b", sat: "2,104,923,114", rarity: "Common", tags: ["Gold", "Crown"] },
-  { id: 3, type: "ord", emoji: "🔥", name: "Rare Sat", collection: "Rare Sats", price: "0.310", usd: "$30,070", inscription: "i9x2k1p...8q3r", sat: "420,000", rarity: "Legendary", tags: ["Pizza Sat", "Vintage"] },
-  { id: 4, type: "ord", emoji: "💎", name: "NodeMonke #2099", collection: "NodeMonkes", price: "0.128", usd: "$12,416", inscription: "i1b8c3d...7e2f", sat: "891,234,567", rarity: "Rare", tags: ["Diamond", "Cyborg"] },
-];
-
-const FALLBACK_RUNES = [
-  { id: 5, type: "rune", emoji: "🟣", name: "UNCOMMON GOODS", collection: "Runes Protocol", price: "0.000042", usd: "$0.004", supply: "21B", holders: "48,291", marketCap: "$84.2M", change: "+12.4%" },
-  { id: 6, type: "rune", emoji: "🔮", name: "DOG GO TO THE MOON", collection: "Runes Protocol", price: "0.000018", usd: "$0.0017", supply: "100B", holders: "102,884", marketCap: "$172M", change: "+8.1%" },
-  { id: 7, type: "rune", emoji: "🌙", name: "SATOSHI NAKAMOTO", collection: "Runes Protocol", price: "0.00091", usd: "$0.088", supply: "21M", holders: "12,450", marketCap: "$1.85M", change: "-3.2%" },
-];
-
-const FALLBACK_BRC20 = [
-  { id: 8, type: "brc", emoji: "🔵", name: "ORDI", collection: "BRC-20", price: "0.00082", usd: "$0.0795", supply: "21M", holders: "89,234", marketCap: "$1.67M", change: "+5.6%" },
-  { id: 9, type: "brc", emoji: "🌊", name: "SATS", collection: "BRC-20", price: "0.0000003", usd: "$0.000029", supply: "2.1T", holders: "214,890", marketCap: "$60.9M", change: "+2.8%" },
-  { id: 10, type: "brc", emoji: "🎯", name: "RATS", collection: "BRC-20", price: "0.00000041", usd: "$0.000040", supply: "1T", holders: "76,112", marketCap: "$39.7M", change: "-1.4%" },
-];
-
-const TICKER_DATA = [
-  { name: "Ordinal Punks", price: "0.085 BTC", change: "+4.2%", up: true, type: "ord" },
-  { name: "Bitcoin Frogs", price: "0.042 BTC", change: "+1.8%", up: true, type: "ord" },
-  { name: "UNCOMMON GOODS", price: "0.000042 BTC", change: "+12.4%", up: true, type: "rune" },
-  { name: "DOG GO TO THE MOON", price: "0.000018 BTC", change: "+8.1%", up: true, type: "rune" },
-  { name: "ORDI", price: "0.00082 BTC", change: "+5.6%", up: true, type: "brc" },
-  { name: "SATS", price: "0.0000003 BTC", change: "+2.8%", up: true, type: "brc" },
-  { name: "NodeMonkes", price: "0.128 BTC", change: "+9.1%", up: true, type: "ord" },
-  { name: "SATOSHI NAKAMOTO", price: "0.00091 BTC", change: "-3.2%", up: false, type: "rune" },
-  { name: "RATS", price: "0.00000041 BTC", change: "-1.4%", up: false, type: "brc" },
-];
-
-const ACTIVITY = [
-  { type: "sale", asset: "Ordinal Punk #4291", price: "0.085 BTC", from: "bc1qxy2...9fk", to: "bc1pz4k...8mn", time: "2m ago" },
-  { type: "list", asset: "DOG GO TO THE MOON", price: "0.000018 BTC", from: "bc1q4a7...3xp", to: "—", time: "5m ago" },
-  { type: "sale", asset: "NodeMonke #2099", price: "0.128 BTC", from: "bc1pf8r...7qw", to: "bc1q9d2...1yz", time: "11m ago" },
-  { type: "sale", asset: "ORDI x1000", price: "0.82 BTC", from: "bc1qm3t...5rs", to: "bc1p0x1...4ab", time: "18m ago" },
-  { type: "list", asset: "Rare Sat", price: "0.310 BTC", from: "bc1qw8n...6cd", to: "—", time: "24m ago" },
-  { type: "transfer", asset: "SATS x5,000,000", price: "—", from: "bc1q2j6...9ef", to: "bc1pk4r...2gh", time: "31m ago" },
+  { name:"Xverse", desc:"Most popular Bitcoin & Ordinals wallet", icon:"🟧", color:"#F7931A" },
+  { name:"Leather", desc:"Formerly Hiro Wallet — Bitcoin native", icon:"🟤", color:"#8B4513" },
+  { name:"UniSat", desc:"Built for Ordinals & BRC-20", icon:"🔵", color:"#3B82F6" },
+  { name:"OKX Wallet", desc:"Multi-chain with Bitcoin Ordinals support", icon:"⬛", color:"#333" },
 ];
 
 export default function Home() {
-  const [tab, setTab] = useState("all");
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState(null);
+  const [tab, setTab] = useState("ordinals");
+  const [timeframe, setTimeframe] = useState("1d");
+  const [btcPrice, setBtcPrice] = useState(72000);
   const [walletModal, setWalletModal] = useState(false);
   const [connected, setConnected] = useState(false);
   const [walletAddr, setWalletAddr] = useState("");
   const [toast, setToast] = useState(null);
-  const [buying, setBuying] = useState(false);
-  const [txStep, setTxStep] = useState(0);
-  const [ordinals, setOrdinals] = useState(FALLBACK_ORDINALS);
-  const [runes, setRunes] = useState(FALLBACK_RUNES);
-  const [brc20, setBrc20] = useState(FALLBACK_BRC20);
-  const [loading, setLoading] = useState(true);
-  const [btcPrice, setBtcPrice] = useState(97000);
+  const [search, setSearch] = useState("");
+  const [mempoolItems, setMempoolItems] = useState(MEMPOOL);
 
   useEffect(() => {
     fetchBtcPrice();
-    fetchRunes();
-    fetchBrc20();
-    fetchOrdinals();
+    const interval = setInterval(() => {
+      setMempoolItems(prev => {
+        const types = ["sale","list","transfer"];
+        const cols = ["NodeMonkes","Runestone","ORDI","DOG•GO•TO•THE•MOON","Bitcoin Frogs","SATS"];
+        const prices = ["0.0240","0.0012","0.00082","0.000018","0.0043","0.0000003"];
+        const idx = Math.floor(Math.random()*cols.length);
+        const newItem = {
+          time:"now",
+          col:cols[idx],
+          price:prices[idx],
+          from:"bc1"+Math.random().toString(36).slice(2,5)+"..."+Math.random().toString(36).slice(2,5),
+          to:Math.random()>0.3?"bc1"+Math.random().toString(36).slice(2,5)+"..."+Math.random().toString(36).slice(2,5):"—",
+          type:types[Math.floor(Math.random()*types.length)]
+        };
+        return [newItem, ...prev.slice(0,7)];
+      });
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchBtcPrice = async () => {
@@ -88,473 +102,301 @@ export default function Home() {
       const res = await fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot");
       const data = await res.json();
       setBtcPrice(parseFloat(data.data.amount));
-    } catch (e) {
-      console.log("BTC price fetch failed");
-    }
+    } catch(e) {}
   };
 
-  const fetchRunes = async () => {
-    try {
-      const res = await fetch(`${HIRO_API}/runes/v1/etchings?limit=6&offset=0`, { headers });
-      const data = await res.json();
-      if (data.results && data.results.length > 0) {
-        const formatted = data.results.map((r, i) => ({
-          id: 100 + i,
-          type: "rune",
-          emoji: ["🟣", "🔮", "🌙", "💜", "⚡", "🔥"][i % 6],
-          name: r.spaced_name || r.name || "Unknown Rune",
-          collection: "Runes Protocol",
-          price: (Math.random() * 0.001).toFixed(6),
-          usd: "$" + (Math.random() * 100).toFixed(2),
-          supply: r.terms?.amount ? parseInt(r.terms.amount).toLocaleString() : "—",
-          holders: r.holder_count ? r.holder_count.toLocaleString() : "—",
-          marketCap: "$" + (Math.random() * 100).toFixed(1) + "M",
-          change: (Math.random() > 0.5 ? "+" : "-") + (Math.random() * 15).toFixed(1) + "%",
-          runeId: r.id,
-          number: r.number,
-        }));
-        setRunes(formatted);
-      }
-    } catch (e) {
-      console.log("Runes fetch failed, using fallback");
-    }
-  };
+  const showToast = (msg, icon="✅") => { setToast({msg,icon}); setTimeout(()=>setToast(null),3000); };
+  const connectWallet = (w) => { setWalletModal(false); setWalletAddr("bc1p"+Math.random().toString(36).slice(2,8)+"..."+Math.random().toString(36).slice(2,5)); setConnected(true); showToast(`${w.name} connected`,"🔗"); };
 
-  const fetchBrc20 = async () => {
-    try {
-      const res = await fetch(`${HIRO_API}/ordinals/v1/brc-20/tokens?limit=6&offset=0`, { headers });
-      const data = await res.json();
-      if (data.results && data.results.length > 0) {
-        const formatted = data.results.map((t, i) => ({
-          id: 200 + i,
-          type: "brc",
-          emoji: ["🔵", "🌊", "🎯", "💠", "🔷", "⬡"][i % 6],
-          name: t.ticker?.toUpperCase() || "Unknown",
-          collection: "BRC-20",
-          price: (Math.random() * 0.001).toFixed(7),
-          usd: "$" + (Math.random() * 0.5).toFixed(4),
-          supply: t.max_supply ? parseInt(t.max_supply).toLocaleString() : "—",
-          holders: t.holder_count ? t.holder_count.toLocaleString() : "—",
-          marketCap: "$" + (Math.random() * 50).toFixed(1) + "M",
-          change: (Math.random() > 0.5 ? "+" : "-") + (Math.random() * 10).toFixed(1) + "%",
-          ticker: t.ticker,
-        }));
-        setBrc20(formatted);
-      }
-    } catch (e) {
-      console.log("BRC-20 fetch failed, using fallback");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchOrdinals = async () => {
-    try {
-      const res = await fetch(`${HIRO_API}/ordinals/v1/inscriptions?limit=6&offset=0`, { headers });
-      const data = await res.json();
-      if (data.results && data.results.length > 0) {
-        const formatted = data.results.map((ins, i) => ({
-          id: 300 + i,
-          type: "ord",
-          emoji: ["🟠", "⚡", "🔥", "💎", "👾", "🎨"][i % 6],
-          name: "Inscription #" + ins.number,
-          collection: "Ordinals",
-          price: (0.001 + Math.random() * 0.2).toFixed(3),
-          usd: "$" + (1000 + Math.random() * 10000).toFixed(0),
-          inscription: ins.id ? ins.id.slice(0, 8) + "..." + ins.id.slice(-4) : "—",
-          sat: ins.sat_ordinal ? parseInt(ins.sat_ordinal).toLocaleString() : "—",
-          rarity: ins.sat_rarity ? ins.sat_rarity.charAt(0).toUpperCase() + ins.sat_rarity.slice(1) : "Common",
-          tags: [ins.content_type?.split("/")[1] || "unknown"],
-          inscriptionId: ins.id,
-          number: ins.number,
-        }));
-        setOrdinals(formatted);
-      }
-    } catch (e) {
-      console.log("Ordinals fetch failed, using fallback");
-    }
-  };
-
-  const showToast = (msg, icon = "✅") => {
-    setToast({ msg, icon });
-    setTimeout(() => setToast(null), 3500);
-  };
-
-  const connectWallet = (wallet) => {
-    setWalletModal(false);
-    const addr = "bc1p" + Math.random().toString(36).slice(2, 8) + "..." + Math.random().toString(36).slice(2, 5);
-    setWalletAddr(addr);
-    setConnected(true);
-    showToast(`${wallet.name} connected`, "🔗");
-  };
-
-  const handleBuy = () => {
-    if (!connected) { setWalletModal(true); return; }
-    setBuying(true); setTxStep(1);
-    setTimeout(() => setTxStep(2), 1200);
-    setTimeout(() => setTxStep(3), 2400);
-    setTimeout(() => {
-      setBuying(false); setTxStep(0); setSelected(null);
-      showToast("Purchase complete! Asset transferred to your wallet.", "🎉");
-    }, 3600);
-  };
-
-  const allItems = [...ordinals, ...runes, ...brc20];
-  const filtered = allItems.filter(item => {
-    if (tab !== "all" && String(item.type) !== String(tab)) return false;
-    if (search && !item.name.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  const tableData = tab==="ordinals" ? COLLECTIONS : tab==="runes" ? RUNES : BRC20;
+  const filtered = search ? tableData.filter(i=>i.name.toLowerCase().includes(search.toLowerCase())) : tableData;
 
   return (
     <>
       <Head>
-        <title>SATS.MKT — Bitcoin Ordinals and Runes Marketplace</title>
-        <meta name="description" content="Trade Ordinals, Runes, and BRC-20 tokens trustlessly on Bitcoin" />
+        <title>SATS.MKT — Bitcoin Ordinals, Runes & BRC-20</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
-
       <style>{`
-        :root {
-          --bg: #080808; --surface: #0f0f0f; --surface2: #161616;
-          --border: #222; --border2: #2a2a2a;
-          --orange: #f7931a; --orange-glow: rgba(247,147,26,0.15);
-          --text: #f0ece4; --text2: #888; --text3: #555;
-          --green: #22c55e; --red: #ef4444;
-          --rune: #a78bfa; --brc: #38bdf8;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; }
-        .mono { font-family: 'Space Mono', monospace; }
-        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 64px; background: rgba(8,8,8,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-        .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
-        .nav-logo-icon { width: 28px; height: 28px; background: var(--orange); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #000; }
-        .nav-links { display: flex; gap: 2px; }
-        .nav-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all 0.15s; border: none; background: none; font-family: 'Syne', sans-serif; }
-        .nav-link:hover, .nav-link.active { color: var(--text); background: var(--surface2); }
-        .btn-connect { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; background: var(--orange); color: #000; border: none; cursor: pointer; font-family: 'Syne', sans-serif; transition: all 0.15s; }
-        .btn-connect:hover { background: #ffaa33; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(247,147,26,0.4); }
-        .wallet-connected { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; font-size: 12px; font-family: 'Space Mono', monospace; color: var(--text2); cursor: pointer; }
-        .wallet-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
-        .btc-price { font-size: 11px; color: var(--orange); font-family: 'Space Mono', monospace; }
-        .ticker-bar { position: fixed; top: 64px; left: 0; right: 0; z-index: 99; height: 36px; background: var(--surface); border-bottom: 1px solid var(--border); overflow: hidden; display: flex; align-items: center; }
-        .ticker-track { display: flex; gap: 48px; white-space: nowrap; animation: ticker 30s linear infinite; padding: 0 24px; }
-        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        .ticker-item { display: flex; align-items: center; gap: 8px; font-size: 11px; font-family: 'Space Mono', monospace; }
-        .ticker-name { color: var(--text2); }
-        .ticker-price { color: var(--text); font-weight: 700; }
-        .ticker-change.up { color: var(--green); }
-        .ticker-change.down { color: var(--red); }
-        .ticker-badge { padding: 1px 5px; border-radius: 3px; font-size: 9px; font-weight: 700; }
-        .badge-ord { background: rgba(247,147,26,0.15); color: var(--orange); }
-        .badge-rune { background: rgba(167,139,250,0.15); color: var(--rune); }
-        .badge-brc { background: rgba(56,189,248,0.15); color: var(--brc); }
-        .main { padding-top: 100px; }
-        .hero { padding: 60px 48px 40px; position: relative; overflow: hidden; }
-        .hero-bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(247,147,26,0.07) 0%, transparent 70%); }
-        .hero-grid { position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 48px 48px; opacity: 0.3; mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent); }
-        .hero-content { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
-        .hero-label { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--orange-glow); border: 1px solid rgba(247,147,26,0.2); border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--orange); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; }
-        .hero-label-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--orange); animation: pulse 2s ease-in-out infinite; }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .hero-title { font-size: clamp(36px, 5vw, 64px); font-weight: 800; line-height: 1.05; letter-spacing: -2px; margin-bottom: 16px; }
-        .hero-title span { color: var(--orange); }
-        .hero-sub { font-size: 16px; color: var(--text2); max-width: 480px; line-height: 1.6; margin-bottom: 36px; }
-        .hero-stats { display: flex; gap: 48px; }
-        .hero-stat-val { font-size: 28px; font-weight: 800; font-family: 'Space Mono', monospace; letter-spacing: -1px; }
-        .hero-stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
-        .filters-bar { padding: 0 48px; }
-        .filters-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-        .filter-tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 3px; }
-        .filter-tab { padding: 6px 16px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; border: none; font-family: 'Syne', sans-serif; background: none; color: var(--text2); }
-        .filter-tab:hover { color: var(--text); }
-        .filter-tab.tab-all.active { background: var(--surface2); color: var(--text); }
-        .filter-tab.tab-ord.active { background: rgba(247,147,26,0.15); color: var(--orange); }
-        .filter-tab.tab-rune.active { background: rgba(167,139,250,0.15); color: var(--rune); }
-        .filter-tab.tab-brc.active { background: rgba(56,189,248,0.15); color: var(--brc); }
-        .search-box { flex: 1; min-width: 200px; max-width: 320px; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
-        .search-input { background: none; border: none; outline: none; color: var(--text); font-family: 'Syne', sans-serif; font-size: 13px; width: 100%; }
-        .search-input::placeholder { color: var(--text3); }
-        .sort-select { background: var(--surface); border: 1px solid var(--border); color: var(--text2); padding: 7px 12px; border-radius: 8px; font-size: 12px; font-family: 'Syne', sans-serif; outline: none; cursor: pointer; }
-        .grid-wrap { padding: 24px 48px 64px; }
-        .grid-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-        .loading-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-        .skeleton { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-        .skeleton-img { width: 100%; aspect-ratio: 1; background: var(--surface2); animation: shimmer 1.5s ease-in-out infinite; }
-        .skeleton-body { padding: 14px; }
-        .skeleton-line { height: 12px; background: var(--surface2); border-radius: 4px; margin-bottom: 8px; animation: shimmer 1.5s ease-in-out infinite; }
-        .skeleton-line.short { width: 60%; }
-        @keyframes shimmer { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
-        .card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-        .card:hover .card-buy { opacity: 1; transform: translateY(0); }
-        .card-img { width: 100%; aspect-ratio: 1; position: relative; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 64px; }
-        .card-type-badge { position: absolute; top: 10px; left: 10px; }
-        .card-body { padding: 14px; }
-        .card-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-collection { font-size: 11px; color: var(--text3); margin-bottom: 12px; font-family: 'Space Mono', monospace; }
-        .card-rune-info { display: flex; gap: 12px; margin-bottom: 10px; }
-        .card-rune-stat-label { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-rune-stat-val { font-size: 13px; font-weight: 700; font-family: 'Space Mono', monospace; }
-        .card-price { font-size: 15px; font-weight: 800; font-family: 'Space Mono', monospace; color: var(--orange); }
-        .card-price-usd { font-size: 10px; color: var(--text3); margin-top: 1px; }
-        .card-buy { position: absolute; bottom: 14px; right: 14px; padding: 6px 14px; background: var(--orange); color: #000; border-radius: 6px; font-size: 11px; font-weight: 800; font-family: 'Syne', sans-serif; opacity: 0; transform: translateY(4px); transition: all 0.15s; border: none; cursor: pointer; }
-        .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 24px; }
-        .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
-        .modal-title { font-size: 16px; font-weight: 800; }
-        .modal-close { width: 32px; height: 32px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--border); color: var(--text2); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .modal-body { padding: 24px; }
-        .modal-asset { display: flex; gap: 24px; margin-bottom: 24px; }
-        .modal-asset-img { width: 140px; height: 140px; border-radius: 12px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 56px; flex-shrink: 0; }
-        .modal-asset-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
-        .modal-asset-col { font-size: 12px; color: var(--text3); font-family: 'Space Mono', monospace; margin-bottom: 16px; }
-        .modal-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-        .modal-tag { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; background: var(--surface2); color: var(--text2); }
-        .modal-price-section { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
-        .modal-price-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-        .modal-price-main { font-size: 28px; font-weight: 800; font-family: 'Space Mono', monospace; color: var(--orange); }
-        .modal-price-usd { font-size: 14px; color: var(--text2); margin-top: 2px; }
-        .modal-details { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .modal-detail { background: var(--surface2); border-radius: 8px; padding: 12px; }
-        .modal-detail-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .modal-detail-val { font-size: 13px; font-weight: 700; font-family: 'Space Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .psbt-section { background: rgba(247,147,26,0.04); border: 1px solid rgba(247,147,26,0.15); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
-        .psbt-title { font-size: 12px; font-weight: 700; color: var(--orange); margin-bottom: 8px; }
-        .psbt-step { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
-        .psbt-step-num { width: 18px; height: 18px; border-radius: 50%; background: var(--orange); color: #000; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-        .psbt-step-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
-        .btn-buy-now { width: 100%; padding: 14px; background: var(--orange); color: #000; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; font-family: 'Syne', sans-serif; cursor: pointer; transition: all 0.15s; }
-        .btn-buy-now:hover { background: #ffaa33; box-shadow: 0 4px 24px rgba(247,147,26,0.4); }
-        .btn-offer { width: 100%; padding: 14px; background: transparent; color: var(--text); border: 1px solid var(--border2); border-radius: 12px; font-size: 14px; font-weight: 700; font-family: 'Syne', sans-serif; cursor: pointer; transition: all 0.15s; margin-top: 8px; }
-        .btn-offer:hover { background: var(--surface2); }
-        .wallet-option { display: flex; align-items: center; gap: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.15s; margin-bottom: 8px; }
-        .wallet-option:hover { background: var(--surface2); border-color: var(--border2); }
-        .wallet-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .wallet-name { font-size: 14px; font-weight: 700; }
-        .wallet-desc { font-size: 12px; color: var(--text3); margin-top: 1px; }
-        .toast { position: fixed; bottom: 32px; right: 32px; z-index: 300; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 12px 18px; font-size: 13px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-        .activity-bar { padding: 0 48px 64px; }
-        .activity-inner { max-width: 1200px; margin: 0 auto; }
-        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-        .section-title-line { flex: 1; height: 1px; background: var(--border); }
-        .activity-table { width: 100%; border-collapse: collapse; }
-        .activity-table th { text-align: left; padding: 8px 12px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; border-bottom: 1px solid var(--border); }
-        .activity-table td { padding: 10px 12px; border-bottom: 1px solid rgba(34,34,34,0.5); color: var(--text2); font-family: 'Space Mono', monospace; font-size: 11px; }
-        .activity-table tr:hover td { background: var(--surface2); color: var(--text); }
-        .act-type { padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; }
-        .act-sale { background: rgba(34,197,94,0.12); color: var(--green); }
-        .act-list { background: rgba(247,147,26,0.12); color: var(--orange); }
-        .act-transfer { background: rgba(136,136,136,0.12); color: var(--text3); }
-        .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); display: inline-block; margin-right: 6px; animation: pulse 2s ease-in-out infinite; }
+        :root{--bg:#0d0d0d;--surface:#141414;--surface2:#1a1a1a;--border:#242424;--border2:#2e2e2e;--orange:#f7931a;--text:#ffffff;--text2:#a0a0a0;--text3:#505050;--green:#00c48c;--red:#ff4d4d;--rune:#b794f4;--brc:#63b3ed;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+        a{color:inherit;text-decoration:none;}
+
+        /* NAV */
+        .nav{position:fixed;top:0;left:0;right:0;z-index:100;height:56px;display:flex;align-items:center;padding:0 24px;gap:32px;background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+        .nav-logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;letter-spacing:-0.5px;white-space:nowrap;}
+        .nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange);}
+        .nav-search{flex:1;max-width:480px;display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;}
+        .nav-search input{background:none;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%;}
+        .nav-search input::placeholder{color:var(--text3);}
+        .nav-links{display:flex;gap:4px;margin-left:auto;}
+        .nav-link{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif;white-space:nowrap;}
+        .nav-link:hover,.nav-link.active{color:var(--text);background:var(--surface2);}
+        .nav-right{display:flex;align-items:center;gap:12px;margin-left:8px;}
+        .btc-chip{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;font-size:11px;font-family:'Space Mono',monospace;}
+        .btc-chip-dot{width:5px;height:5px;border-radius:50%;background:var(--orange);}
+        .btn-connect{padding:7px 16px;border-radius:7px;font-size:13px;font-weight:600;background:var(--orange);color:#000;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;white-space:nowrap;}
+        .btn-connect:hover{background:#ffaa33;box-shadow:0 0 16px rgba(247,147,26,0.4);}
+        .wallet-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:7px;font-size:11px;font-family:'Space Mono',monospace;color:var(--text2);cursor:pointer;}
+        .wallet-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);}
+
+        /* TRENDING BAR */
+        .trending-bar{position:fixed;top:56px;left:0;right:0;z-index:99;height:80px;background:var(--surface);border-bottom:1px solid var(--border);overflow:hidden;display:flex;align-items:center;}
+        .trending-scroll{display:flex;gap:12px;white-space:nowrap;animation:scroll 25s linear infinite;padding:0 16px;}
+        @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+        .trending-card{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+        .trending-card:hover{border-color:var(--border2);background:#222;}
+        .trending-badge{position:absolute;top:4px;left:4px;background:var(--orange);color:#000;font-size:8px;font-weight:800;padding:2px 5px;border-radius:3px;letter-spacing:0.5px;}
+        .trending-img{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;flex-shrink:0;}
+        .trending-name{font-size:12px;font-weight:600;white-space:nowrap;}
+        .trending-price{font-size:10px;color:var(--text2);font-family:'Space Mono',monospace;margin-top:1px;}
+
+        /* MAIN */
+        .main{padding-top:136px;display:flex;gap:0;}
+        .content{flex:1;min-width:0;padding:24px 24px 24px 24px;}
+        .sidebar{width:280px;flex-shrink:0;border-left:1px solid var(--border);padding:20px 16px;height:calc(100vh - 136px);position:sticky;top:136px;overflow-y:auto;}
+
+        /* TABS */
+        .tabs-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+        .tabs{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;}
+        .tab-btn{padding:6px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;background:none;color:var(--text2);transition:all 0.15s;}
+        .tab-btn:hover{color:var(--text);}
+        .tab-btn.active-ordinals{background:#f7931a22;color:var(--orange);}
+        .tab-btn.active-runes{background:#b794f422;color:var(--rune);}
+        .tab-btn.active-brc20{background:#63b3ed22;color:var(--brc);}
+        .timeframes{display:flex;gap:2px;}
+        .tf-btn{padding:5px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:none;font-family:'Space Mono',monospace;background:none;color:var(--text3);transition:all 0.15s;}
+        .tf-btn:hover{color:var(--text2);}
+        .tf-btn.active{background:var(--surface2);color:var(--text);}
+
+        /* TABLE */
+        .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+        .table{width:100%;border-collapse:collapse;}
+        .table th{text-align:left;padding:10px 16px;color:var(--text3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap;}
+        .table th.right,.table td.right{text-align:right;}
+        .table td{padding:12px 16px;border-bottom:1px solid rgba(36,36,36,0.5);font-size:13px;vertical-align:middle;}
+        .table tr:last-child td{border-bottom:none;}
+        .table tr:hover td{background:rgba(255,255,255,0.02);}
+        .col-info{display:flex;align-items:center;gap:12px;}
+        .col-num{color:var(--text3);font-size:12px;width:20px;text-align:right;flex-shrink:0;}
+        .col-img{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+        .col-name{font-size:14px;font-weight:600;}
+        .col-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+        .up{color:var(--green);}
+        .down{color:var(--red);}
+        .mono{font-family:'Space Mono',monospace;}
+        .spark{display:flex;align-items:center;gap:1px;}
+        .spark-bar{width:3px;border-radius:1px;}
+
+        /* SIDEBAR */
+        .sidebar-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+        .live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s ease-in-out infinite;display:inline-block;}
+        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+        .mempool-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:11px;}
+        .mempool-item:last-child{border-bottom:none;}
+        .mempool-type{padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700;flex-shrink:0;}
+        .type-sale{background:rgba(0,196,140,0.12);color:var(--green);}
+        .type-list{background:rgba(247,147,26,0.12);color:var(--orange);}
+        .type-transfer{background:rgba(80,80,80,0.2);color:var(--text3);}
+        .mempool-col{flex:1;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .mempool-price{font-family:'Space Mono',monospace;color:var(--orange);flex-shrink:0;}
+        .mempool-time{color:var(--text3);flex-shrink:0;min-width:24px;text-align:right;}
+        .sidebar-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+        .stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+        .stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+        .stat-val{font-size:16px;font-weight:800;font-family:'Space Mono',monospace;}
+        .stat-change{font-size:10px;margin-top:2px;}
+
+        /* MODAL */
+        .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:24px;}
+        .modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:400px;}
+        .modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);}
+        .modal-title{font-size:15px;font-weight:700;}
+        .modal-close{width:28px;height:28px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+        .modal-body{padding:20px;}
+        .wallet-option{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;margin-bottom:8px;}
+        .wallet-option:hover{background:var(--surface2);border-color:var(--border2);}
+        .wallet-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+        .wallet-name{font-size:13px;font-weight:600;}
+        .wallet-desc{font-size:11px;color:var(--text3);margin-top:1px;}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:24px;right:24px;z-index:300;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 16px;font-size:13px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar{width:4px;}
+        ::-webkit-scrollbar-track{background:transparent;}
+        ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
       `}</style>
 
+      {/* NAV */}
       <nav className="nav">
         <div className="nav-logo">
-          <div className="nav-logo-icon">₿</div>
+          <div className="nav-logo-dot"/>
           SATS.MKT
         </div>
+        <div className="nav-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#505050" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input placeholder="Search collections, inscriptions, wallets..." value={search} onChange={e=>setSearch(e.target.value)}/>
+          <span style={{fontSize:10,color:"var(--text3)",background:"var(--surface)",border:"1px solid var(--border)",padding:"2px 6px",borderRadius:4,fontFamily:"monospace"}}>⌘K</span>
+        </div>
         <div className="nav-links">
-          {["Market", "Collections", "Runes", "BRC-20", "Activity"].map(l => (
-            <button key={l} className={`nav-link${l === "Market" ? " active" : ""}`}>{l}</button>
+          {["Ordinals","Runes","Portfolio","Activity"].map(l=>(
+            <button key={l} className={`nav-link${l==="Ordinals"?" active":""}`}>{l}</button>
           ))}
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <div className="btc-price">BTC ${btcPrice.toLocaleString()}</div>
+        <div className="nav-right">
+          <div className="btc-chip"><div className="btc-chip-dot"/>₿ ${btcPrice.toLocaleString()}</div>
           {connected
-            ? <div className="wallet-connected"><div className="wallet-dot" />{walletAddr}</div>
-            : <button className="btn-connect" onClick={() => setWalletModal(true)}>Connect Wallet</button>
+            ?<div className="wallet-pill"><div className="wallet-dot"/>{walletAddr}</div>
+            :<button className="btn-connect" onClick={()=>setWalletModal(true)}>Connect Wallet</button>
           }
         </div>
       </nav>
 
-      <div className="ticker-bar">
-        <div className="ticker-track">
-          {[...TICKER_DATA, ...TICKER_DATA].map((t, i) => (
-            <div key={i} className="ticker-item">
-              <span className={`ticker-badge ${badgeClass(t.type)}`}>{badgeLabel(t.type)}</span>
-              <span className="ticker-name">{t.name}</span>
-              <span className="ticker-price">{t.price}</span>
-              <span className={`ticker-change ${t.up ? "up" : "down"}`}>{t.change}</span>
+      {/* TRENDING BAR */}
+      <div className="trending-bar">
+        <div className="trending-scroll">
+          {[...TRENDING,...TRENDING].map((t,i)=>(
+            <div key={i} className="trending-card">
+              <div className="trending-img" style={{background:t.color}}>
+                {t.img}
+                <div className="trending-badge">TRENDING</div>
+              </div>
+              <div>
+                <div className="trending-name">{t.name}</div>
+                <div className="trending-price">floor 0.024 BTC</div>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      <main className="main">
-        <section className="hero">
-          <div className="hero-bg" /><div className="hero-grid" />
-          <div className="hero-content">
-            <div className="hero-label"><div className="hero-label-dot" />Live — Bitcoin Mainnet</div>
-            <h1 className="hero-title">The Ordinals and Runes<br />Marketplace <span>Bitcoin Deserves</span></h1>
-            <p className="hero-sub">Trade Ordinals, Runes, and BRC-20 tokens trustlessly via PSBT. No custody. No middlemen. Pure Bitcoin.</p>
-            <div className="hero-stats">
-              <div><div className="hero-stat-val mono">$48.2M</div><div className="hero-stat-label">24h Volume</div></div>
-              <div><div className="hero-stat-val mono">284K</div><div className="hero-stat-label">Listings</div></div>
-              <div><div className="hero-stat-val mono">91K</div><div className="hero-stat-label">Traders</div></div>
-            </div>
-          </div>
-        </section>
-
-        <div className="filters-bar">
-          <div className="filters-inner">
-            <div className="filter-tabs">
-              {[["all","All"], ["ord","Ordinals"], ["rune","Runes"], ["brc","BRC-20"]].map(([v,l]) => (
-                <button key={v} className={`filter-tab tab-${v}${tab === v ? " active" : ""}`} onClick={() => setTab(v)}>{l}</button>
+      <div className="main">
+        {/* MAIN CONTENT */}
+        <div className="content">
+          <div className="tabs-row">
+            <div className="tabs">
+              {[["ordinals","Ordinals"],["runes","Runes"],["brc20","BRC-20"]].map(([v,l])=>(
+                <button key={v} className={`tab-btn${tab===v?` active-${v}`:""}`} onClick={()=>setTab(v)}>{l}</button>
               ))}
             </div>
-            <div className="search-box">
-              <input className="search-input" placeholder="Search collections, runes, tokens..." value={search} onChange={e => setSearch(e.target.value)} />
-            </div>
-            <select className="sort-select">
-              <option>Sort: Floor Price</option>
-              <option>Sort: Recent</option>
-              <option>Sort: Volume</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="grid-wrap">
-          {loading ? (
-            <div className="loading-grid">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="skeleton">
-                  <div className="skeleton-img" />
-                  <div className="skeleton-body">
-                    <div className="skeleton-line" />
-                    <div className="skeleton-line short" />
-                    <div className="skeleton-line short" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid-inner">
-              {filtered.map(item => (
-                <div key={item.id} className="card" onClick={() => setSelected(item)}>
-                  <div className="card-img">
-                    {item.emoji}
-                    <div className="card-type-badge">
-                      <span className={`ticker-badge ${badgeClass(item.type)}`}>{badgeLabel(item.type)}</span>
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <div className="card-name">{item.name}</div>
-                    <div className="card-collection">{item.collection}</div>
-                    {(item.type === "rune" || item.type === "brc") && (
-                      <div className="card-rune-info">
-                        <div style={{flex:1}}>
-                          <div className="card-rune-stat-label">Mkt Cap</div>
-                          <div className="card-rune-stat-val" style={{color: typeColor(item.type)}}>{item.marketCap}</div>
-                        </div>
-                        <div style={{flex:1}}>
-                          <div className="card-rune-stat-label">24h</div>
-                          <div className="card-rune-stat-val" style={{color: item.change && item.change.startsWith("+") ? "#22c55e" : "#ef4444"}}>{item.change}</div>
-                        </div>
-                      </div>
-                    )}
-                    <div className="card-price">{item.price} BTC</div>
-                    <div className="card-price-usd">{item.usd}</div>
-                  </div>
-                  <button className="card-buy">Buy Now</button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="activity-bar">
-          <div className="activity-inner">
-            <div className="section-title"><span className="live-dot" />Live Activity <div className="section-title-line" /></div>
-            <table className="activity-table">
-              <thead><tr><th>Type</th><th>Asset</th><th>Price</th><th>From</th><th>To</th><th>Time</th></tr></thead>
-              <tbody>
-                {ACTIVITY.map((a, i) => (
-                  <tr key={i}>
-                    <td><span className={`act-type act-${a.type}`}>{a.type.toUpperCase()}</span></td>
-                    <td style={{color:"#f0ece4",fontWeight:700}}>{a.asset}</td>
-                    <td style={{color:"#f7931a"}}>{a.price}</td>
-                    <td>{a.from}</td><td>{a.to}</td>
-                    <td style={{color:"#555"}}>{a.time}</td>
-                  </tr>
+            <div style={{display:"flex",alignItems:"center",gap:16}}>
+              <div className="timeframes">
+                {["6h","1d","7d","30d"].map(t=>(
+                  <button key={t} className={`tf-btn${timeframe===t?" active":""}`} onClick={()=>setTimeframe(t)}>{t.toUpperCase()}</button>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Collection</th>
+                  <th className="right">Floor</th>
+                  <th className="right">{timeframe.toUpperCase()} Change</th>
+                  <th className="right">{timeframe.toUpperCase()} Volume</th>
+                  <th className="right">Sales</th>
+                  <th className="right">Listed</th>
+                  <th className="right">Mkt Cap</th>
+                  <th className="right">Last {timeframe.toUpperCase()}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((row,i)=>{
+                  const isUp = row.change.startsWith("+");
+                  const sparkHeights = [4,6,5,8,4,7,5,6,8,5,7,6].map(h=>h+Math.random()*4);
+                  return (
+                    <tr key={row.id} style={{cursor:"pointer"}}>
+                      <td><span style={{color:"var(--text3)",fontSize:12}}>{i+1}</span></td>
+                      <td>
+                        <div className="col-info">
+                          <div className="col-img" style={{background:row.color}}>{row.img}</div>
+                          <div>
+                            <div className="col-name">{row.name}</div>
+                            <div className="col-sub">{tab==="ordinals"?"Ordinals":tab==="runes"?"Runes":"BRC-20"}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="right mono" style={{fontSize:12}}>{row.floor} <span style={{color:"var(--text3)"}}>BTC</span></td>
+                      <td className={`right mono ${isUp?"up":"down"}`} style={{fontSize:12}}>{row.change}</td>
+                      <td className="right mono" style={{fontSize:12}}>{row.vol} <span style={{color:"var(--text3)"}}>BTC</span></td>
+                      <td className="right mono" style={{fontSize:12,color:"var(--text2)"}}>{typeof row.sales==="number"?row.sales.toLocaleString():row.sales}</td>
+                      <td className="right mono" style={{fontSize:12,color:"var(--text2)"}}>{row.listed}</td>
+                      <td className="right mono" style={{fontSize:12,color:"var(--text2)"}}>{row.cap}</td>
+                      <td className="right">
+                        <div className="spark" style={{justifyContent:"flex-end"}}>
+                          {sparkHeights.map((h,si)=>(
+                            <div key={si} className="spark-bar" style={{height:`${h}px`,background:isUp?"var(--green)":"var(--red)",opacity:0.6+(si/sparkHeights.length)*0.4}}/>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
-      </main>
 
-      {selected && (
-        <div className="modal-overlay" onClick={e => { if(e.target === e.currentTarget) setSelected(null); }}>
-          <div className="modal">
-            <div className="modal-header">
-              <div className="modal-title">{selected.name}</div>
-              <button className="modal-close" onClick={() => setSelected(null)}>X</button>
+        {/* SIDEBAR */}
+        <div className="sidebar">
+          <div className="sidebar-stats">
+            <div className="stat-card">
+              <div className="stat-label">24H Vol</div>
+              <div className="stat-val" style={{fontSize:14}}>$48.2M</div>
+              <div className="stat-change up">+12.4%</div>
             </div>
-            <div className="modal-body">
-              <div className="modal-asset">
-                <div className="modal-asset-img">{selected.emoji}</div>
-                <div>
-                  <div className="modal-asset-name">{selected.name}</div>
-                  <div className="modal-asset-col">{selected.collection}</div>
-                  <div className="modal-tags">
-                    <span className={`modal-tag ticker-badge ${badgeClass(selected.type)}`}>{badgeLabel(selected.type)}</span>
-                    {selected.rarity && <span className="modal-tag">{selected.rarity}</span>}
-                    {selected.tags && selected.tags.map(t => <span key={t} className="modal-tag">{t}</span>)}
-                  </div>
-                </div>
-              </div>
-              <div className="modal-price-section">
-                <div className="modal-price-label">Current Price</div>
-                <div className="modal-price-main">{selected.price} BTC</div>
-                <div className="modal-price-usd">approximately {selected.usd}</div>
-              </div>
-              <div className="modal-details">
-                {selected.inscription && <div className="modal-detail"><div className="modal-detail-label">Inscription ID</div><div className="modal-detail-val">{selected.inscription}</div></div>}
-                {selected.sat && <div className="modal-detail"><div className="modal-detail-label">Sat Number</div><div className="modal-detail-val">{selected.sat}</div></div>}
-                {selected.supply && <div className="modal-detail"><div className="modal-detail-label">Total Supply</div><div className="modal-detail-val">{selected.supply}</div></div>}
-                {selected.holders && <div className="modal-detail"><div className="modal-detail-label">Holders</div><div className="modal-detail-val">{selected.holders}</div></div>}
-                {selected.marketCap && <div className="modal-detail"><div className="modal-detail-label">Market Cap</div><div className="modal-detail-val">{selected.marketCap}</div></div>}
-                {selected.change && <div className="modal-detail"><div className="modal-detail-label">24h Change</div><div className="modal-detail-val" style={{color: selected.change.startsWith("+") ? "#22c55e" : "#ef4444"}}>{selected.change}</div></div>}
-              </div>
-              <div className="psbt-section">
-                <div className="psbt-title">PSBT Trustless Trade</div>
-                <div className="psbt-step"><div className="psbt-step-num">1</div><div className="psbt-step-text">Seller creates a Partially Signed Bitcoin Transaction locking their asset</div></div>
-                <div className="psbt-step"><div className="psbt-step-num">2</div><div className="psbt-step-text">You sign the buyer half with your wallet — no funds leave until confirmed</div></div>
-                <div className="psbt-step"><div className="psbt-step-num">3</div><div className="psbt-step-text">Combined PSBT broadcasts to Bitcoin — atomic swap, no custody</div></div>
-              </div>
-              {buying ? (
-                <div style={{textAlign:"center",padding:"16px 0"}}>
-                  <div style={{fontSize:13,color:"#f7931a",fontFamily:"Space Mono monospace",marginBottom:8}}>{["","Building PSBT...","Awaiting wallet signature...","Broadcasting to Bitcoin..."][txStep]}</div>
-                  <div style={{background:"#161616",borderRadius:8,height:4,overflow:"hidden"}}>
-                    <div style={{height:"100%",background:"#f7931a",width:`${(txStep/3)*100}%`,transition:"width 0.8s ease",borderRadius:8}} />
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <button className="btn-buy-now" onClick={handleBuy}>{connected ? `Buy for ${selected.price} BTC` : "Connect Wallet to Buy"}</button>
-                  <button className="btn-offer">Make Offer</button>
-                </>
-              )}
+            <div className="stat-card">
+              <div className="stat-label">BTC Price</div>
+              <div className="stat-val" style={{fontSize:14}}>${(btcPrice/1000).toFixed(1)}K</div>
+              <div className="stat-change up">+2.1%</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">Sales</div>
+              <div className="stat-val" style={{fontSize:14}}>14.2K</div>
+              <div className="stat-change down">-3.2%</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-label">Traders</div>
+              <div className="stat-val" style={{fontSize:14}}>91K</div>
+              <div className="stat-change up">+8.7%</div>
             </div>
           </div>
-        </div>
-      )}
 
-      {walletModal && (
-        <div className="modal-overlay" onClick={e => { if(e.target === e.currentTarget) setWalletModal(false); }}>
+          <div className="sidebar-title">
+            <span className="live-dot"/>
+            Mempool Activity
+          </div>
+          {mempoolItems.map((m,i)=>(
+            <div key={i} className="mempool-item">
+              <span className={`mempool-type type-${m.type}`}>{m.type.toUpperCase()}</span>
+              <span className="mempool-col">{m.col}</span>
+              <span className="mempool-price">{m.price}</span>
+              <span className="mempool-time">{m.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* WALLET MODAL */}
+      {walletModal&&(
+        <div className="modal-overlay" onClick={e=>{if(e.target===e.currentTarget)setWalletModal(false);}}>
           <div className="modal">
             <div className="modal-header">
               <div className="modal-title">Connect Bitcoin Wallet</div>
-              <button className="modal-close" onClick={() => setWalletModal(false)}>X</button>
+              <button className="modal-close" onClick={()=>setWalletModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <p style={{fontSize:13,color:"#888",marginBottom:20,lineHeight:1.6}}>Connect your Bitcoin wallet to buy, sell, and list Ordinals, Runes, and BRC-20 tokens. All trades are trustless via PSBT — we never hold your funds.</p>
-              {WALLETS.map(w => (
-                <div key={w.name} className="wallet-option" onClick={() => connectWallet(w)}>
-                  <div className="wallet-icon" style={{background: w.color + "22"}}>{w.icon}</div>
+              <p style={{fontSize:12,color:"var(--text2)",marginBottom:16,lineHeight:1.6}}>All trades are trustless via PSBT. We never hold your funds.</p>
+              {WALLETS.map(w=>(
+                <div key={w.name} className="wallet-option" onClick={()=>connectWallet(w)}>
+                  <div className="wallet-icon" style={{background:w.color+"22"}}>{w.icon}</div>
                   <div><div className="wallet-name">{w.name}</div><div className="wallet-desc">{w.desc}</div></div>
                 </div>
               ))}
@@ -563,7 +405,7 @@ export default function Home() {
         </div>
       )}
 
-      {toast && <div className="toast"><span>{toast.icon}</span>{toast.msg}</div>}
+      {toast&&<div className="toast"><span>{toast.icon}</span>{toast.msg}</div>}
     </>
   );
 }
