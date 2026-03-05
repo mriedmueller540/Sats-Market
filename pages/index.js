@@ -342,7 +342,10 @@ export default function Home() {
         <div className="nav-right">
           <div className="btc-chip"><div className="btc-dot"/>₿ ${btcPrice.toLocaleString()}</div>
           {connected
-            ?<div className="wallet-pill"><div className="wallet-dot"/>{walletAddr}</div>
+            ?<div style={{display:"flex",alignItems:"center",gap:6}}>
+              <div className="wallet-pill"><div className="wallet-dot"/>{walletAddr}</div>
+              <button onClick={disconnect} style={{padding:"6px 10px",borderRadius:"6px",background:"rgba(248,113,113,0.1)",border:"1px solid rgba(248,113,113,0.2)",color:"#f87171",fontSize:"11px",cursor:"pointer",fontWeight:600}}>Disconnect</button>
+            </div>
             :<button className="btn-connect" onClick={()=>setWalletModal(true)}>Enter the Garden</button>
           }
         </div>
